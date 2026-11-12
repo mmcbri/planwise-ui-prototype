@@ -117,6 +117,22 @@ else:
                 placeholder="e.g., 10 mg"
             )
 
+            quantity = st.text_input(
+                "How many pills or units do you receive?",
+                placeholder="e.g. 30 tablets"
+            )
+
+            days_supply = st.selectbox(
+                "How long does this prescription usually last?",
+                [
+                    "1 month",
+                    "2 months",
+                    "3 months".
+                    "Other",
+                    "I'm not sure"
+                ]
+            )
+
             frequency = st.selectbox(
                 "How often do you take it?",
                 [
@@ -137,7 +153,9 @@ else:
                     st.session_state.medications.append({
                         "name": medication_name.strip(),
                         "dosage": dosage.strip(),
-                        "frequency": frequency
+                        "frequency": frequency,
+                        "quantity": quantity.strip(),
+                        "days_supply": days_supply
                     })
                     st.success(
                         f"{medication_name.strip()} was added to your list!"
@@ -170,7 +188,9 @@ else:
                         f"**{i + 1}. {med['name']}**"
                     )
                     st.caption(
-                        f"{med['dosage']} | {med['frequency']}"
+                        f"{med['dosage']} | {med['frequency']} | "
+                        f"Quantity: {med['quantity'] or 'Not provided'} | "
+                        f"Days' supply: {med['days_supply']}"
                     )
 
                 with col2:
