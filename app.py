@@ -7,6 +7,7 @@ st.set_page_config(
     layout="centered"
 )
 
+# Initialize session state
 if "started" not in st.session_state:
     st.session_state.started = False
 
@@ -29,7 +30,13 @@ if not st.session_state.started:
     )
 
     st.divider()
+
     st.header("Let's find a plan that fits your needs")
+
+    st.write(
+        "Answer a few questions to get a personalized "
+        "comparison of available plans."
+    )
 
     if st.button("Get Started"):
         st.session_state.started = True
@@ -45,6 +52,8 @@ else:
     )
 
     st.divider()
+
+    # About you
     st.subheader("A little about you")
 
     zip_code = st.text_input(
@@ -73,70 +82,131 @@ else:
     st.header("Your medications")
 
     st.write(
-        "Let's make sure we consider the prescriptions "
-        "you currently take."
+        """
+        Please enter each prescription medication you currently take.
+        You'll add them to your list one at a time.
+
+        When you've entered all your medications, select Continue.
+        """
     )
 
-    with st.form("medication_form", clear_on_submit=True):
-        medication_name = st.text_input(
-            "Medication name",
-            placeholder="e.g., Lisinopril"
+    # Option for people who do not take prescriptions
+    no_medications = st.checkbox(
+        "I don't currently take any prescription medications."
+    )
+
+    if no_medications:
+        st.session_state.medications = []
+        st.info(
+            "That's okay! You can continue without entering medications."
         )
 
-        dosage = st.text_input(
-            "Strength / dosage",
-            placeholder="e.g., 10 mg"
-        )
+    else:
+        # Medication entry form
+        st.subheader("Add a medication")
 
-        frequency = st.selectbox(
-            "How often do you take it?",
-            [
-                "Once daily",
-                "Twice daily",
-                "Three times daily",
-                "As needed",
-                "Other"
-            ]
-        )
+        with st.form("medication_form", clear_on_submit=True):
 
-        add_medication = st.form_submit_button(
-            "Add medication"
-        )
+            medication_name = st.text_input(
+                "Medication name",
+                placeholder="e.g., Lisinopril"
+            )
 
-        if add_medication:
-            if medication_name and dosage:
-                st.session_state.medications.append({
-                    "name": medication_name,
-                    "dosage": dosage,
-                    "frequency": frequency
-                })
-                st.success(f"{medication_name} added!")
-            else:
-                st.error("Please enter a medication name and dosage.")
+            dosage = st.text_input(
+                "Strength / dosage",
+                placeholder="e.g., 10 mg"
+            )
 
-    # Display entered medications
-    if st.session_state.medications:
-        st.subheader("Your medication list")
+            frequency = st.selectbox(
+                "How often do you take it?",
+                [
+                    "Once daily",
+                    "Twice daily",
+                    "Three times daily",
+                    "As needed",
+                    "Other"
+                ]
+            )
 
-        for i, med in enumerate(st.session_state.medications):
+            add_medication = st.form_submit_button(
+                "+ Add medication to my list"
+            )
+
+            if add_medication:
+                if medication_name.strip() and dosage.strip():
+                    st.session_state.medications.append({
+                        "name": medication_name.strip(),
+                        "dosage": dosage.strip(),
+                        "frequency": frequency
+                    })
+                    st.success(
+                        f"{medication_name.strip()} was added to your list!"
+                    )
+                else:
+                    st.error(
+                        "Please enter both the medication name and dosage."
+                    )
+
+        # Display medication list
+        if st.session_state.medications:
+            st.divider()
+
+            count = len(st.session_state.medications)
+
+            st.subheader(
+                f"Your medication list ({count} added)"
+            )
+
             st.write(
-                f"**{i + 1}. {med['name']}** — "
-                f"{med['dosage']}, {med['frequency']}"
+                "If you take more prescription medications, "
+                "you can add another above."
+            )
+
+            for i, med in enumerate(st.session_state.medications):
+                col1, col2 = st.columns([4, 1])
+
+                with col1:
+                    st.write(
+                        f"**{i + 1}. {med['name']}**"
+                    )
+                    st.caption(
+                        f"{med['dosage']} | {med['frequency']}"
+                    )
+
+                with col2:
+                    if st.button("Remove", key=f"remove_{i}"):
+                        st.session_state.medications.pop(i)
+                        st.rerun()
+
+        else:
+            st.info(
+                "You haven't added any medications yet. "
+                "Enter your first medication above."
             )
 
     st.divider()
 
+    st.write(
+        "**Finished entering your medications?** "
+        "Select Continue to move to the next step."
+    )
+
     if st.button("Continue"):
         if len(zip_code) != 5 or not zip_code.isdigit():
             st.error("Please enter a valid 5-digit ZIP code.")
-        elif not pharmacy:
+        elif not pharmacy.strip():
             st.error("Please enter your preferred pharmacy.")
-        elif not st.session_state.medications:
-            st.error("Please add at least one medication.")
+        elif (
+            not no_medications
+            and not st.session_state.medications
+        ):
+            st.error(
+                "Please add at least one medication or select "
+                "'I don't currently take any prescription medications.'"
+            )
         else:
             st.success("Your information has been recorded!")
 
     if st.button("Back to Welcome Page"):
         st.session_state.started = False
         st.rerun()
-
