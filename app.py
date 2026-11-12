@@ -85,130 +85,131 @@ else:
         """
         Please enter each prescription medication you currently take.
         You'll add them to your list one at a time.
-
-        When you've entered all your medications, select Continue.
         """
     )
-
-    # Option for people who do not take prescriptions
+    
     no_medications = st.checkbox(
         "I don't currently take any prescription medications."
     )
-
+    
     if no_medications:
         st.session_state.medications = []
-        st.info(
-            "That's okay! You can continue without entering medications."
-        )
-
+        st.info("That's okay! You can continue without entering medications.")
+    
     else:
-        # Medication entry form
-        st.subheader("Add a medication")
-
-        with st.form("medication_form", clear_on_submit=True):
-
-            medication_name = st.text_input(
-                "Medication name",
-                placeholder="e.g., Lisinopril"
-            )
-
-            dosage = st.text_input(
-                "Strength / dosage",
-                placeholder="e.g., 10 mg"
-            )
-
-            quantity = st.text_input(
-                "How many pills or units do you receive?",
-                placeholder="e.g. 30 tablets"
-            )
-
-            days_supply = st.selectbox(
-                "How long does this prescription usually last?",
-                [
-                    "1 month",
-                    "2 months",
-                    "3 months",
-                    "Other",
-                    "I'm not sure"
-                ]
-            )
-
-            frequency = st.selectbox(
-                "How often do you take it?",
-                [
-                    "Once daily",
-                    "Twice daily",
-                    "Three times daily",
-                    "As needed",
-                    "Other"
-                ]
-            )
-
-            add_medication = st.form_submit_button(
-                "+ Add medication to my list"
-            )
-
-            if add_medication:
-                if medication_name.strip() and dosage.strip():
-                    st.session_state.medications.append({
-                        "name": medication_name.strip(),
-                        "dosage": dosage.strip(),
-                        "frequency": frequency,
-                        "quantity": quantity.strip(),
-                        "days_supply": days_supply
-                    })
-                    st.success(
-                        f"{medication_name.strip()} was added to your list!"
-                    )
-                else:
-                    st.error(
-                        "Please enter both the medication name and dosage."
-                    )
-
-        # Display medication list
-        if st.session_state.medications:
-            st.divider()
-
+        # Two-column layout
+        left_column, right_column = st.columns([1, 1])
+    
+        # LEFT: Medication entry form
+        with left_column:
+            st.subheader("Add a medication")
+    
+            with st.form("medication_form", clear_on_submit=True):
+    
+                medication_name = st.text_input(
+                    "Medication name",
+                    placeholder="e.g., Lisinopril"
+                )
+    
+                dosage = st.text_input(
+                    "Strength / dosage",
+                    placeholder="e.g., 10 mg"
+                )
+    
+                frequency = st.selectbox(
+                    "How often do you take it?",
+                    [
+                        "Once daily",
+                        "Twice daily",
+                        "Three times daily",
+                        "As needed",
+                        "Other"
+                    ]
+                )
+    
+                quantity = st.text_input(
+                    "How many pills or units do you receive?",
+                    placeholder="e.g., 30 tablets"
+                )
+    
+                days_supply = st.selectbox(
+                    "How long does this prescription last?",
+                    [
+                        "30 days",
+                        "60 days",
+                        "90 days",
+                        "Other",
+                        "I'm not sure"
+                    ]
+                )
+    
+                add_medication = st.form_submit_button(
+                    "+ Add medication to my list",
+                    use_container_width=True
+                )
+    
+                if add_medication:
+                    if medication_name.strip() and dosage.strip():
+                        st.session_state.medications.append({
+                            "name": medication_name.strip(),
+                            "dosage": dosage.strip(),
+                            "frequency": frequency,
+                            "quantity": quantity.strip(),
+                            "days_supply": days_supply
+                        })
+    
+                        st.success(
+                            f"{medication_name.strip()} added!"
+                        )
+                    else:
+                        st.error(
+                            "Please enter the medication name and dosage."
+                        )
+    
+        # RIGHT: Medication list
+        with right_column:
+            st.subheader("Your medication list")
+    
             count = len(st.session_state.medications)
-
-            st.subheader(
-                f"Your medication list ({count} added)"
-            )
-
-            st.write(
-                "If you take more prescription medications, "
-                "you can add another above."
-            )
-
-            for i, med in enumerate(st.session_state.medications):
-                col1, col2 = st.columns([4, 1])
-
-                with col1:
-                    st.write(
-                        f"**{i + 1}. {med['name']}**"
-                    )
-                    st.caption(
-                        f"{med['dosage']} | {med['frequency']} | "
-                        f"Quantity: {med['quantity'] or 'Not provided'} | "
-                        f"Days' supply: {med['days_supply']}"
-                    )
-
-                with col2:
-                    if st.button("Remove", key=f"remove_{i}"):
-                        st.session_state.medications.pop(i)
-                        st.rerun()
-
-        else:
-            st.info(
-                "You haven't added any medications yet. "
-                "Enter your first medication above."
-            )
-
+    
+            st.caption(f"{count} medication(s) added")
+    
+            if st.session_state.medications:
+    
+                for i, med in enumerate(st.session_state.medications):
+    
+                    with st.container(border=True):
+                        st.write(f"**{i + 1}. {med['name']}**")
+    
+                        st.caption(
+                            f"{med['dosage']} | {med['frequency']}"
+                        )
+    
+                        st.caption(
+                            f"Quantity: {med['quantity'] or 'Not provided'}"
+                        )
+    
+                        st.caption(
+                            f"Days' supply: {med['days_supply']}"
+                        )
+    
+                        if st.button(
+                            "Remove",
+                            key=f"remove_{i}"
+                        ):
+                            st.session_state.medications.pop(i)
+                            st.rerun()
+    
+            else:
+                st.info(
+                    "Your medications will appear here as you add them."
+                )
+    
     st.divider()
-
+    
     st.write(
         "**Finished entering your medications?** "
-        "Select Continue to move to the next step."
+        "Select Continue when your list is complete."
     )
 
     if st.button("Continue"):
