@@ -82,4 +82,4 @@ with continue_col:
             st.session_state.new_med_category = new_med_category
             st.session_state.cost_preference = cost_preference
 
-            st.success("Your preferences have been saved!")
+            st.switch_page("pages/5_Additional_Questions.py")
