@@ -3,12 +3,59 @@ import streamlit as st
 
 st.title("Your PlanWise recommendations")
 
+
 st.write(
     "We've compared available Medicare Part D plans based on "
     "your medications, pharmacy preferences, and priorities."
 )
 
+# Temporary intake review for testing
+with st.expander("Review your intake answers (testing)"):
+
+    st.subheader("About you")
+
+    st.write(f"**ZIP code:** {st.session_state.get('zip_code', 'Not provided')}")
+    st.write(f"**Medicare assistance:** {st.session_state.get('assistance', 'Not provided')}")
+    st.write(f"**First Part D enrollment:** {st.session_state.get('part_d_experience', 'Not provided')}")
+
+    st.divider()
+
+    st.subheader("Medications")
+
+    if st.session_state.get("no_medications", False):
+        st.write("No current prescription medications.")
+    else:
+        medications = st.session_state.get("medications", [])
+
+        if medications:
+            for med in medications:
+                st.write(
+                    f"**{med['name']}** — {med['dosage']}, "
+                    f"{med['frequency']}, {med['quantity']} "
+                    f"{med['quantity_unit']}, {med['days_supply']}"
+                )
+        else:
+            st.write("No medications entered.")
+
+    st.divider()
+
+    st.subheader("Pharmacy preferences")
+
+    st.write(f"**Preferred pharmacy:** {st.session_state.get('pharmacy', 'Not provided')}")
+    st.write(f"**Willing to switch pharmacies:** {st.session_state.get('switch_pharmacy', 'Not provided')}")
+    st.write(f"**Willing to use mail order:** {st.session_state.get('mail_order', 'Not provided')}")
+
+    st.divider()
+
+    st.subheader("Plan preferences")
+
+    st.write(f"**Generic medications:** {st.session_state.get('generic_preference', 'Not provided')}")
+    st.write(f"**Expecting new medications:** {st.session_state.get('expect_new_meds', 'Not provided')}")
+    st.write(f"**Potential new medication:** {st.session_state.get('new_med_category', 'Not provided')}")
+    st.write(f"**Cost priority:** {st.session_state.get('cost_preference', 'Not provided')}")
+
 st.divider()
+
 
 # Recommended plan
 st.header("Your recommended plan")
