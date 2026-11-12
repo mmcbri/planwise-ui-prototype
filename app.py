@@ -48,10 +48,11 @@ welcome = st.Page(welcome_page, title="Welcome", default=True)
 about_you = st.Page("pages/1_About_You.py", title="A little about you")
 medications = st.Page("pages/2_Medications.py", title="Your medications")
 pharmacy = st.Page("pages/3_Pharmacy.py", title="Pharmacy preferences")
+plan_preferences = st.Page("pages/4_Plan_Preferences.py", title="Plan preferences")
 
 # Set up navigation
 page = st.navigation(
-    [welcome, about_you, medications, pharmacy],
+    [welcome, about_you, medications, pharmacy, plan_preferences],
     position="hidden"
 )
 
