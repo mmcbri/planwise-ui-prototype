@@ -127,7 +127,7 @@ else:
                 [
                     "1 month",
                     "2 months",
-                    "3 months".
+                    "3 months",
                     "Other",
                     "I'm not sure"
                 ]
