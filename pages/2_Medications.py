@@ -148,5 +148,5 @@ with continue_col:
                 "indicating you don't take any."
             )
         else:
-            st.switch_page("app.py")
+            st.switch_page("pages/3_Pharmacy.py")
 
