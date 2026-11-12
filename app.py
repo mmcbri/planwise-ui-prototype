@@ -128,8 +128,21 @@ else:
                 )
     
                 quantity = st.text_input(
-                    "How many pills or units do you receive?",
-                    placeholder="e.g., 30 tablets"
+                    "Quantity",
+                    placeholder="e.g., 30"
+                )
+
+                quantity_unit = st.selectbox(
+                    "Unit",
+                    [
+                        "Tablets",
+                        "Capsules",
+                        "mL",
+                        "Inhalers",
+                        "Patches",
+                        "Packets",
+                        "Other"
+                    ]
                 )
     
                 days_supply = st.selectbox(
@@ -155,6 +168,7 @@ else:
                             "dosage": dosage.strip(),
                             "frequency": frequency,
                             "quantity": quantity.strip(),
+                            "quantity_unit": quantity_unit,
                             "days_supply": days_supply
                         })
     
@@ -176,32 +190,50 @@ else:
     
             if st.session_state.medications:
 
-                for i, med in enumerate(st.session_state.medications):
+                count = len(st.session_state.medications)
 
-                    with st.container(border=True):
+                st.caption(f"{count} medication(s) added")
             
-                        # Medication name and remove button on one row
-                        name_col, remove_col = st.columns([5, 1])
+                # Create two columns within the medication list
+                medication_columns = st.columns(2, gap="medium")
             
-                        with name_col:
-                            st.markdown(
-                                f"**{i + 1}. {med['name']}**"
+                for i, med in enumerate(st.session_state.medications):
+            
+                    # Alternate medications between the two columns
+                    with medication_columns[i % 2]:
+            
+                        with st.container(border=True):
+            
+                            # Medication name and remove button
+                            name_col, remove_col = st.columns([4, 1])
+            
+                            with name_col:
+                                st.markdown(
+                                    f"**{i + 1}. {med['name']}**"
+                                )
+            
+                            with remove_col:
+                                if st.button(
+                                    "Remove",
+                                    key=f"remove_{i}"
+                                ):
+                                    st.session_state.medications.pop(i)
+                                    st.rerun()
+            
+                            # Medication details
+                            quantity_display = (
+                                f"{med['quantity']} {med.get('quantity_unit', '')}"
+                                if med.get("quantity")
+                                else "Quantity not provided"
                             )
             
-                        with remove_col:
-                            if st.button(
-                                "Remove",
-                                key=f"remove_{i}"
-                            ):
-                                st.session_state.medications.pop(i)
-                                st.rerun()
+                            st.caption(
+                                f"{med['dosage']} · {med['frequency']}"
+                            )
             
-                        # Medication details underneath
-                        st.caption(
-                            f"{med['dosage']} · {med['frequency']} · "
-                            f"{med['quantity'] or 'Quantity not provided'} · "
-                            f"{med['days_supply']}"
-                        )
+                            st.caption(
+                                f"{quantity_display} · {med['days_supply']}"
+                            )
     
             else:
                 st.info(
