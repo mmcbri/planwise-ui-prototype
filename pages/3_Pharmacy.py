@@ -74,4 +74,4 @@ with continue_col:
             st.session_state.switch_pharmacy = switch_pharmacy
             st.session_state.mail_order = mail_order
 
-            st.success("Your pharmacy preferences have been saved!")
+            st.switch_page("pages/4_Plan_Preferences.py")
