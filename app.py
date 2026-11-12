@@ -46,10 +46,11 @@ def welcome_page():
 # Register all pages here
 welcome = st.Page(welcome_page, title="Welcome", default=True)
 about_you = st.Page("pages/1_About_You.py", title="A little about you")
+medications = st.Page("pages/2_Medications.py", title="Your medications")
 
 # Set up navigation
 page = st.navigation(
-    [welcome, about_you],
+    [welcome, about_you, medications],
     position="hidden"
 )
 
