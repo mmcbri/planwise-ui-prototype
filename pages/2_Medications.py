@@ -27,36 +27,37 @@ if no_medications:
     st.info("No problem! You can continue without adding medications.")
 
 else:
-    # Medication entry form
-    st.subheader("Add a medication")
+    # Side-by-side layout
+    entry_col, list_col = st.columns([1, 1.3], gap="large")
 
-    with st.form("medication_form", clear_on_submit=True):
+    # LEFT: Medication entry form
+    with entry_col:
+        st.subheader("Add a medication")
 
-        medication_name = st.text_input(
-            "Medication name",
-            placeholder="e.g., Lisinopril"
-        )
+        with st.form("medication_form", clear_on_submit=True):
 
-        dosage = st.text_input(
-            "Strength / dosage",
-            placeholder="e.g., 10 mg"
-        )
+            medication_name = st.text_input(
+                "Medication name",
+                placeholder="e.g., Lisinopril"
+            )
 
-        frequency = st.selectbox(
-            "How often do you take it?",
-            [
-                "Once daily",
-                "Twice daily",
-                "Three times daily",
-                "Four times daily",
-                "As needed",
-                "Other"
-            ]
-        )
+            dosage = st.text_input(
+                "Strength / dosage",
+                placeholder="e.g., 10 mg"
+            )
 
-        col1, col2 = st.columns(2)
+            frequency = st.selectbox(
+                "How often do you take it?",
+                [
+                    "Once daily",
+                    "Twice daily",
+                    "Three times daily",
+                    "Four times daily",
+                    "As needed",
+                    "Other"
+                ]
+            )
 
-        with col1:
             quantity = st.number_input(
                 "Quantity per refill",
                 min_value=0,
@@ -64,85 +65,88 @@ else:
                 value=30
             )
 
-        with col2:
             quantity_unit = st.selectbox(
                 "Quantity unit",
                 ["tablets", "capsules", "mL", "inhalers", "patches", "other"]
             )
 
-        days_supply = st.selectbox(
-            "How many days does each refill typically last?",
-            ["30 days", "60 days", "90 days", "Other"]
-        )
+            days_supply = st.selectbox(
+                "How many days does each refill typically last?",
+                ["30 days", "60 days", "90 days", "Other"]
+            )
 
-        submitted = st.form_submit_button(
-            "Add medication",
-            use_container_width=True
-        )
+            submitted = st.form_submit_button(
+                "Add medication",
+                use_container_width=True
+            )
 
-        if submitted:
-            if not medication_name.strip():
-                st.error("Please enter a medication name.")
-            elif not dosage.strip():
-                st.error("Please enter the medication strength or dosage.")
-            else:
-                st.session_state.medications.append({
-                    "name": medication_name.strip(),
-                    "dosage": dosage.strip(),
-                    "frequency": frequency,
-                    "quantity": quantity,
-                    "quantity_unit": quantity_unit,
-                    "days_supply": days_supply
-                })
-                st.rerun()
+            if submitted:
+                if not medication_name.strip():
+                    st.error("Please enter a medication name.")
+                elif not dosage.strip():
+                    st.error("Please enter the medication strength or dosage.")
+                else:
+                    st.session_state.medications.append({
+                        "name": medication_name.strip(),
+                        "dosage": dosage.strip(),
+                        "frequency": frequency,
+                        "quantity": quantity,
+                        "quantity_unit": quantity_unit,
+                        "days_supply": days_supply
+                    })
+                    st.rerun()
 
+    # RIGHT: Medication list
+    with list_col:
+        st.subheader("Your medication list")
 
-# Display medication list
-st.divider()
-st.subheader("Your medication list")
+        if st.session_state.medications:
+            count = len(st.session_state.medications)
+            st.caption(f"{count} medication(s) added")
 
-if st.session_state.medications:
-    st.caption(f"{len(st.session_state.medications)} medication(s) added")
+            for i, med in enumerate(st.session_state.medications):
+                with st.container(border=True):
 
-    medication_columns = st.columns(2, gap="medium")
+                    name_col, remove_col = st.columns([4, 1])
 
-    for i, med in enumerate(st.session_state.medications):
-        with medication_columns[i % 2]:
-            with st.container(border=True):
+                    with name_col:
+                        st.markdown(f"**{i + 1}. {med['name']}**")
 
-                name_col, remove_col = st.columns([4, 1])
+                    with remove_col:
+                        if st.button("Remove", key=f"remove_{i}"):
+                            st.session_state.medications.pop(i)
+                            st.rerun()
 
-                with name_col:
-                    st.markdown(f"**{i + 1}. {med['name']}**")
+                    quantity_display = (
+                        f"{med['quantity']} {med['quantity_unit']}"
+                        if med.get("quantity")
+                        else "Quantity not provided"
+                    )
 
-                with remove_col:
-                    if st.button("Remove", key=f"remove_{i}"):
-                        st.session_state.medications.pop(i)
-                        st.rerun()
+                    st.caption(f"{med['dosage']} · {med['frequency']}")
+                    st.caption(f"{quantity_display} · {med['days_supply']}")
 
-                quantity_display = (
-                    f"{med['quantity']} {med['quantity_unit']}"
-                    if med.get("quantity")
-                    else "Quantity not provided"
-                )
-
-                st.caption(f"{med['dosage']} · {med['frequency']}")
-                st.caption(f"{quantity_display} · {med['days_supply']}")
-
-elif not st.session_state.no_medications:
-    st.caption("No medications added yet.")
+        else:
+            st.info("Your added medications will appear here.")
 
 
 # Navigation
 st.divider()
 
-if st.button("Back", use_container_width=False):
-    st.switch_page("pages/1_About_You.py")
+back_col, continue_col = st.columns([1, 3])
 
-if st.button("Continue", use_container_width=True):
+with back_col:
+    if st.button("Back"):
+        st.switch_page("pages/1_About_You.py")
 
-    if not st.session_state.medications and not st.session_state.no_medications:
-        st.error("Please add at least one medication or select the option indicating you don't take any.")
+with continue_col:
+    if st.button("Continue", use_container_width=True):
 
-    else:
-        st.switch_page("app.py")
+        if not st.session_state.medications and not st.session_state.no_medications:
+            st.error(
+                "Please add at least one medication or select the option "
+                "indicating you don't take any."
+            )
+        else:
+            st.switch_page("app.py")
+
