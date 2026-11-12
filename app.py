@@ -1,5 +1,4 @@
 
-
 import streamlit as st
 
 st.set_page_config(
@@ -10,6 +9,9 @@ st.set_page_config(
 
 if "started" not in st.session_state:
     st.session_state.started = False
+
+if "medications" not in st.session_state:
+    st.session_state.medications = []
 
 # Welcome screen
 if not st.session_state.started:
@@ -27,13 +29,7 @@ if not st.session_state.started:
     )
 
     st.divider()
-
     st.header("Let's find a plan that fits your needs")
-
-    st.write(
-        "Answer a few questions to get a personalized "
-        "comparison of available plans."
-    )
 
     if st.button("Get Started"):
         st.session_state.started = True
@@ -49,7 +45,6 @@ else:
     )
 
     st.divider()
-
     st.subheader("A little about you")
 
     zip_code = st.text_input(
@@ -74,15 +69,74 @@ else:
 
     st.divider()
 
+    # Medication section
+    st.header("Your medications")
+
+    st.write(
+        "Let's make sure we consider the prescriptions "
+        "you currently take."
+    )
+
+    with st.form("medication_form", clear_on_submit=True):
+        medication_name = st.text_input(
+            "Medication name",
+            placeholder="e.g., Lisinopril"
+        )
+
+        dosage = st.text_input(
+            "Strength / dosage",
+            placeholder="e.g., 10 mg"
+        )
+
+        frequency = st.selectbox(
+            "How often do you take it?",
+            [
+                "Once daily",
+                "Twice daily",
+                "Three times daily",
+                "As needed",
+                "Other"
+            ]
+        )
+
+        add_medication = st.form_submit_button(
+            "Add medication"
+        )
+
+        if add_medication:
+            if medication_name and dosage:
+                st.session_state.medications.append({
+                    "name": medication_name,
+                    "dosage": dosage,
+                    "frequency": frequency
+                })
+                st.success(f"{medication_name} added!")
+            else:
+                st.error("Please enter a medication name and dosage.")
+
+    # Display entered medications
+    if st.session_state.medications:
+        st.subheader("Your medication list")
+
+        for i, med in enumerate(st.session_state.medications):
+            st.write(
+                f"**{i + 1}. {med['name']}** — "
+                f"{med['dosage']}, {med['frequency']}"
+            )
+
+    st.divider()
+
     if st.button("Continue"):
         if len(zip_code) != 5 or not zip_code.isdigit():
             st.error("Please enter a valid 5-digit ZIP code.")
         elif not pharmacy:
             st.error("Please enter your preferred pharmacy.")
+        elif not st.session_state.medications:
+            st.error("Please add at least one medication.")
         else:
-            st.success("Your answers have been recorded!")
-            st.write("We'll use these answers to personalize your plan comparison.")
+            st.success("Your information has been recorded!")
 
     if st.button("Back to Welcome Page"):
         st.session_state.started = False
         st.rerun()
+
