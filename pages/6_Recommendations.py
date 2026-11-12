@@ -1,5 +1,6 @@
 
 import streamlit as st
+from utils.intake_data import collect_intake_data
 
 st.title("Your PlanWise recommendations")
 
@@ -8,6 +9,9 @@ st.write(
     "We've compared available Medicare Part D plans based on "
     "your medications, pharmacy preferences, and priorities."
 )
+
+# Collect all intake answers into one organized dictionary
+intake_data = collect_intake_data(st.session_state)
 
 # Temporary intake review for testing
 with st.expander("Review your intake answers (testing)"):
@@ -37,6 +41,9 @@ with st.expander("Review your intake answers (testing)"):
         else:
             st.write("No medications entered.")
 
+    with st.expander("View structured intake data (testing)"):
+        st.json(intake_data)
+    
     st.divider()
 
     st.subheader("Pharmacy preferences")
@@ -53,6 +60,7 @@ with st.expander("Review your intake answers (testing)"):
     st.write(f"**Expecting new medications:** {st.session_state.get('expect_new_meds', 'Not provided')}")
     st.write(f"**Potential new medication:** {st.session_state.get('new_med_category', 'Not provided')}")
     st.write(f"**Cost priority:** {st.session_state.get('cost_preference', 'Not provided')}")
+
 
 st.divider()
 
