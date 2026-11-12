@@ -1,4 +1,5 @@
 
+
 import streamlit as st
 
 st.set_page_config(
@@ -7,7 +8,6 @@ st.set_page_config(
     layout="centered"
 )
 
-# Keep track of which screen the user is viewing
 if "started" not in st.session_state:
     st.session_state.started = False
 
@@ -48,7 +48,40 @@ else:
         "your prescription drug coverage needs."
     )
 
-    st.info("Your personalized intake questions will appear here.")
+    st.divider()
+
+    st.subheader("A little about you")
+
+    zip_code = st.text_input(
+        "What is your ZIP code?",
+        max_chars=5,
+        placeholder="e.g., 48104"
+    )
+
+    pharmacy = st.text_input(
+        "Which pharmacy do you usually use?",
+        placeholder="e.g., CVS, Walgreens, or a local pharmacy"
+    )
+
+    pharmacy_importance = st.radio(
+        "How important is it to keep using this pharmacy?",
+        [
+            "Very important — I don't want to switch",
+            "Somewhat important — I'd consider alternatives",
+            "Not important — I'm open to switching"
+        ]
+    )
+
+    st.divider()
+
+    if st.button("Continue"):
+        if len(zip_code) != 5 or not zip_code.isdigit():
+            st.error("Please enter a valid 5-digit ZIP code.")
+        elif not pharmacy:
+            st.error("Please enter your preferred pharmacy.")
+        else:
+            st.success("Your answers have been recorded!")
+            st.write("We'll use these answers to personalize your plan comparison.")
 
     if st.button("Back to Welcome Page"):
         st.session_state.started = False
