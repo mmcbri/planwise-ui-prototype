@@ -177,28 +177,31 @@ else:
             if st.session_state.medications:
 
                 for i, med in enumerate(st.session_state.medications):
-            
+
                     with st.container(border=True):
-                        st.write(f"**{i + 1}. {med['name']}**")
             
+                        # Medication name and remove button on one row
+                        name_col, remove_col = st.columns([5, 1])
+            
+                        with name_col:
+                            st.markdown(
+                                f"**{i + 1}. {med['name']}**"
+                            )
+            
+                        with remove_col:
+                            if st.button(
+                                "Remove",
+                                key=f"remove_{i}"
+                            ):
+                                st.session_state.medications.pop(i)
+                                st.rerun()
+            
+                        # Medication details underneath
                         st.caption(
-                            f"{med['dosage']} | {med['frequency']}"
+                            f"{med['dosage']} · {med['frequency']} · "
+                            f"{med['quantity'] or 'Quantity not provided'} · "
+                            f"{med['days_supply']}"
                         )
-            
-                        st.caption(
-                            f"Quantity: {med['quantity'] or 'Not provided'}"
-                        )
-            
-                        st.caption(
-                            f"Days' supply: {med['days_supply']}"
-                        )
-            
-                        if st.button(
-                            "Remove",
-                            key=f"remove_{i}"
-                        ):
-                            st.session_state.medications.pop(i)
-                            st.rerun()
     
             else:
                 st.info(
