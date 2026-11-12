@@ -4,7 +4,7 @@ import streamlit as st
 st.set_page_config(
     page_title="PlanWise",
     page_icon="💊",
-    layout="centered"
+    layout="wide"
 )
 
 # Initialize session state
@@ -98,7 +98,7 @@ else:
     
     else:
         # Two-column layout
-        left_column, right_column = st.columns([1, 1])
+        left_column, right_column = st.columns([1, 1.3], gap="large")
     
         # LEFT: Medication entry form
         with left_column:
