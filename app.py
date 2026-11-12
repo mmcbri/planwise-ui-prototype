@@ -49,10 +49,12 @@ about_you = st.Page("pages/1_About_You.py", title="A little about you")
 medications = st.Page("pages/2_Medications.py", title="Your medications")
 pharmacy = st.Page("pages/3_Pharmacy.py", title="Pharmacy preferences")
 plan_preferences = st.Page("pages/4_Plan_Preferences.py", title="Plan preferences")
+additional_questions = st.Page("pages/5_Additional_Questions.py", title="Additional questions")
+recommendations = st.Page("pages/6_Recommendations.py", title="Your recommendations")
 
 # Set up navigation
 page = st.navigation(
-    [welcome, about_you, medications, pharmacy, plan_preferences],
+    [welcome, about_you, medications, pharmacy, plan_preferences, additional_questions, recommendations],
     position="hidden"
 )
 
