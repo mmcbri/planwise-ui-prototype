@@ -175,24 +175,24 @@ else:
             st.caption(f"{count} medication(s) added")
     
             if st.session_state.medications:
-    
+
                 for i, med in enumerate(st.session_state.medications):
-    
+            
                     with st.container(border=True):
                         st.write(f"**{i + 1}. {med['name']}**")
-    
+            
                         st.caption(
                             f"{med['dosage']} | {med['frequency']}"
                         )
-    
+            
                         st.caption(
                             f"Quantity: {med['quantity'] or 'Not provided'}"
                         )
-    
+            
                         st.caption(
                             f"Days' supply: {med['days_supply']}"
                         )
-    
+            
                         if st.button(
                             "Remove",
                             key=f"remove_{i}"
